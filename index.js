@@ -1,30 +1,16 @@
 import express from 'express'
 import router from './router.js'
+import {upload} from './config/multer.js'
 const app = express()
-
 const PORT = 3000
 
-// Define a simple route
-app.use('/user',router)
-app.use(express.json())
-app.post('/user',(req,res) =>{
-    const { name, email } = req.body;
-    res.json({
-        message: `user ${name} is registered with email ${email} successfully`
-    })
-})
-app.put('/user/:id', (req,res) =>{
-    const userId = req.params.id;
-    const {name, email} = req.body;
-    res.json({
-        message : `user ${userId} is updated to ${name} and email ${email}`
-    })
-})
-app.delete('/user/:id', (req,res) =>{
-    const userId = req.params.id;
-    res.json({
-        message : `The user with id of ${userId} is deleted successfully`
-    })
+app.set('view engine', 'ejs')
+app.use('/post', (express.urlencoded({extended:true})))
+app.use('/post', upload.single('image'))
+app.post('/post', (req, res) =>{
+    console.log(req.body);
+    console.log(req.file)
+    res.send('Form recieved')
 })
 app.listen(PORT,() =>[
     console.log(`server is running on http://localhost:${PORT}`)
