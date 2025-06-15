@@ -1,8 +1,14 @@
 import express from 'express'
 import router from './router.js'
+import mongoose from 'mongoose'
 import {upload} from './config/multer.js'
 const app = express()
 const PORT = 3000
+const MONGOBD_URI = 'mongodb+srv://express:0911700417@cluster0.ddgtcqv.mongodb.net/ex'
+
+mongoose.connect(MONGOBD_URI).then(()=>{
+    console.log(`Database connected`);
+})
 
 app.set('view engine', 'ejs')
 app.use('/post', (express.urlencoded({extended:true})))
