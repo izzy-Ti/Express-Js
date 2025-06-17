@@ -5,7 +5,10 @@ import session from 'express-session'
 
 const app = express()
 const PORT = 3000
+const users = []
 
+
+app.use(express.json())
 app.use(cookieParser())
 app.use(session({
     secret:`sample-secret`,
@@ -13,15 +16,35 @@ app.use(session({
     saveUninitialized: false
 }))
 
-app.get('/visit', (req,res) =>{
-    if(req.session.page_view){
-        req.session.page_view ++;
-        res.send(`You have visited this site ${req.session.page_view} times`)
+app.post('/reg', async (req,res) =>{
+    const {username, password} = req.body
+    users.push({
+        username,
+        password
+    })
+    res.send(`User is registered successfully`)
+})
+
+
+app.post('/login', (req,res) =>{
+    const {username, password} = req.body
+    const user = users.find(u=>u.username === username)
+    if(!user || password !== user.password){
+        res.send('invalid credentials')
     } else {
-        req.session.page_view = 1;
-        res.send('Welcom to this page')
+        req.session.user = user
+        res.send('Logined successfully')
     }
 })
+
+app.get('/dash',(req,res) =>{
+    if(!req.session.user){
+        return res.send('please login')
+    }
+    const user = req.session.user
+    res.send(`Welcom ${user.username}`)
+})
+
 app.get('/', (req,res) =>{
     res.send('Hello there')
 })
